@@ -8,34 +8,34 @@ REC_TEST_COMMON_CFG = dict(
 DEFAULT_TEST_REC_VARIANT = dict(
     REC_REFCOCOG_UMD_TEST=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcocog_umd_test.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcocog_umd_test.jsonl',
     ),
     REC_REFCOCOA_UNC_TESTA=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcoco+_unc_testA.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcoco+_unc_testA.jsonl',
     ),
     REC_REFCOCOA_UNC_TESTB=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcoco+_unc_testB.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcoco+_unc_testB.jsonl',
     ),
     REC_REFCOCO_UNC_TESTA=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcoco_unc_testA.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcoco_unc_testA.jsonl',
     ),
     REC_REFCOCO_UNC_TESTB=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcoco_unc_testB.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcoco_unc_testB.jsonl',
     ),
     REC_REFCOCOG_UMD_VAL=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcocog_umd_val.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcocog_umd_val.jsonl',
     ),
     REC_REFCOCOA_UNC_VAL=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcoco+_unc_val.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcoco+_unc_val.jsonl',
     ),
     REC_REFCOCO_UNC_VAL=dict(
         **REC_TEST_COMMON_CFG,
-        filename=r'{{fileDirname}}/../../../data/REC_refcoco_unc_val.jsonl',
+        filename=r'{{fileDirname}}/../../../../data/REC_refcoco_unc_val.jsonl',
     ),
 )
