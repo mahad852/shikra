@@ -8,8 +8,8 @@
 #SBATCH --job-name=SHIKRA_COCO  # Name the job so I can see it in squeue
 #SBATCH --mail-type=BEGIN,END,FAIL # Send me email for various states
 #SBATCH --mail-user ma649596@ucf.edu # Use this address
-#SBATCH --output=outputs/rec.err
-#SBATCH --error=outputs/rec.out
+#SBATCH --output=outputs/rec.out
+#SBATCH --error=outputs/rec.err
 #SBATCH --constraint=gpu80
 
 # Load modules
