@@ -38,5 +38,7 @@ data_args = dict(
         max_new_tokens=1024,
         num_beams=1,
     ),
+
+    dataset="LVIS"
 )
 
