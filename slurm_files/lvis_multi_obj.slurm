@@ -4,12 +4,12 @@
 #SBATCH --ntasks=1 # But only one task
 #SBATCH --gres=gpu:2 # And two GPUs
 #SBATCH --gres-flags=enforce-binding # Insist on good CPU/GPU alignment
-#SBATCH --time=13:59:59 # Run for 14 hours at most
-#SBATCH --job-name=SHIKRA_COCO  # Name the job so I can see it in squeue
+#SBATCH --time=15:59:59 # Run for 16 hours at most
+#SBATCH --job-name=SHIKRA_LVIS  # Name the job so I can see it in squeue
 #SBATCH --mail-type=BEGIN,END,FAIL # Send me email for various states
 #SBATCH --mail-user ma649596@ucf.edu # Use this address
-#SBATCH --output=outputs/rec.out
-#SBATCH --error=outputs/rec.err
+#SBATCH --output=outputs/lvis_multi_obj.out
+#SBATCH --error=outputs/lvis_multi_obj.err
 #SBATCH --constraint=gpu80
 
 # Load modules
