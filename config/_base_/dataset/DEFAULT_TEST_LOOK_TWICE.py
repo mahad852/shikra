@@ -5,7 +5,7 @@ POINT_TEST_COMMON_CFG_LOOK_TWICE = dict(
 )
 
 
-DEFAULT_TEST_LOOK_TWICE_VARIANT = dict(
+DEFAULT_TEST_LOOK_TWICE = dict(
     POINT_TWICE_oq_b_val=dict(**POINT_TEST_COMMON_CFG_LOOK_TWICE, version='oq-b', filename='{{fileDirname}}/../../../../data/pointQA_twice_val.jsonl'),
     POINT_TWICE_oq_p_val=dict(**POINT_TEST_COMMON_CFG_LOOK_TWICE, version='oq-p', filename='{{fileDirname}}/../../../../data/pointQA_twice_val.jsonl'),
     POINT_TWICE_sq_b_val=dict(**POINT_TEST_COMMON_CFG_LOOK_TWICE, version='sq-b', filename='{{fileDirname}}/../../../../data/pointQA_twice_val.jsonl'),
