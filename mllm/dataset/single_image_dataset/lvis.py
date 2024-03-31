@@ -44,7 +44,7 @@ class LVISDataset(MInstrDataset):
 
         image = self.get_image(img_path)
         question = self.get_template().replace(EXPR_PLACEHOLDER, name)
-
+        boxes_placeholder_string = ' '.join([BOXES_PLACEHOLDER] * len(item['bboxes']))
         ret = {
             'image': image,
             'target': {
@@ -57,7 +57,7 @@ class LVISDataset(MInstrDataset):
                 },
                 {
                     'from': 'gpt',
-                    'value': f'Answer: {BOXES_PLACEHOLDER} .',
+                    'value': f'Answer: {boxes_placeholder_string} .',
                     'boxes_seq': [[i] for i in range(len(item['bboxes']))],
                 }
             ]
