@@ -1,3 +1,4 @@
 [
-    "Can you provide the coordinates [x0,y0,x1,y1] of each <expr> in the image <image>?"
+    "Can you provide the coordinates [x0,y0,x1,y1] of each <expr> object in the image <image> separately?",
+    "This image contains one or more <expr> objects. Provide the coordinates [x0,y0,x1,y1] of each of these objects"
 ]

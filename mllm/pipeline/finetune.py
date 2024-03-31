@@ -123,9 +123,6 @@ def main():
             _compute_metrics = item['compute_metric']
             _prefix = f"multitest_{k}"
 
-            for val in _ds:
-                print("ds item:", val, end = "\n\n\n")
-
             trainer.compute_metrics = _compute_metrics
             _pred_results = trainer.predict(_ds, metric_key_prefix=_prefix, **gen_kwargs)
             trainer.log_metrics(_prefix, _pred_results.metrics)  # noqa
