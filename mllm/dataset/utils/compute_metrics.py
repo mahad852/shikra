@@ -26,6 +26,8 @@ class BaseComputeMetrics:
         preds = decode_generate_ids(self.tokenizer, preds)
         targets = decode_generate_ids(self.tokenizer, targets)
         assert len(preds) == len(targets)
+
+        print("preds, targets:", preds, targets, "\n\n\n\n")
         return self.calculate_metric(preds, targets)
 
     def calculate_metric(self, preds: Sequence[str], targets: Sequence[str]) -> Dict[str, Any]:
