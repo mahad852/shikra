@@ -1,6 +1,6 @@
 import json
 
-with open("/Users/ma649596/Downloads/lvis_v1_val.json", "r") as f:
+with open("..data/lvis_v1_val.json", "r") as f:
     obj = json.load(f)
 
 annotations_dict = obj["annotations"]
