@@ -1,3 +1,3 @@
 [
-    "Can you provide the coordinates [x0,y0,x1,y1] of each object belonging to the class <expr> in the image <image>? Please only provide the coordinates of objects which beloing to this class.",
+    "Can you provide the coordinates [x0,y0,x1,y1] of each object belonging to the class <expr> in the image <image>? Please only provide the coordinates of objects which beloing to this class."
 ]
