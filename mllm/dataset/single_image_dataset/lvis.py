@@ -58,7 +58,7 @@ class LVISDataset(MInstrDataset):
                 {
                     'from': 'gpt',
                     'value': f'Answer: {BOXES_PLACEHOLDER} .',
-                    'boxes_seq': [[0]],
+                    'boxes_seq': [[i] for i in range(len(item['bboxes']))],
                 }
             ]
         }
