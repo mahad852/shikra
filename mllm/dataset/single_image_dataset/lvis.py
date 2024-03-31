@@ -75,11 +75,13 @@ class LVISComputeMetrics(BaseComputeMetrics):
         failed = 0
         target_failed = 0
 
-        print("PREDS and TARGETS:", preds, targets, end="\n\n\n\n\n")
 
         pred_boxes, target_boxes = [], []
         for pred, target in zip(preds, targets):
+            print("PREDS and TARGETS:")
+            print("Preds:")
             extract_pred = self.extract_ans(pred)
+            print("targets:")
             extract_target = self.extract_ans(target)
             if extract_target is None:
                 target_failed += 1
@@ -118,6 +120,7 @@ class LVISComputeMetrics(BaseComputeMetrics):
     def extract_ans(self, string: str):
         try:
             list_of_boxes = self.box_formatter.extract(string)
+            print("extracted box list:", list_of_boxes)
             if len(list_of_boxes) != 1 or len(list_of_boxes[0]) != 1:
                 return None
             box = list_of_boxes[0][0]
