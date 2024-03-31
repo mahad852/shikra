@@ -40,7 +40,7 @@ class LVISDataset(MInstrDataset):
     def __getitem__(self, index):
         item = self.get_raw_item(index)
         img_path = item['img_path']
-        name = item['name']
+        name = item['categroy_name']
 
         image = self.get_image(img_path)
         question = self.get_template().replace(EXPR_PLACEHOLDER, name)
