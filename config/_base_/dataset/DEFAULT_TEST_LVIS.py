@@ -1,6 +1,6 @@
 LVIS_TEST_CONFIG = dict(
     type='LVISDataset',
-    image_folder='/datasets/MSCOCO17/val2017',
+    image_folder='/datasets/MSCOCO17/',
     template_file=r"{{fileDirname}}/template/lvis.json",
 )
 
