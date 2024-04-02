@@ -38,12 +38,15 @@ for ann_obj in (annotations_dict):
 
     final_res_indexer[image_id][category_id] = len(final_res)
 
+    bbox = ann_obj["bbox"]
+    updated_bbox = [bbox[0], bbox[1], bbox[0] + bbox[2], bbox[1] + bbox[3]]
+
     final_res.append({
         "image_id" : image_id,
         "category_id" : category_id,
         **image_id_to_info[image_id],
         "category_name" : category_id_to_name[category_id],
-        "bboxes" : [ann_obj["bbox"]],
+        "bboxes" : [updated_bbox],
         "num_objects" : 1
     })
 
