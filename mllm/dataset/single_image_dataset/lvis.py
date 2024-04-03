@@ -114,6 +114,10 @@ class LVISComputeMetrics(BaseComputeMetrics):
                         true_positives += 1
                         all_ious.append(ious[p][chosen_index].item())
             
+            with open("../data/lvis_precision_log.txt", "w") as f:
+                f.write(str(1.0 * true_positives / len(targets)))
+                f.write("\n")
+
             total_precision += 1.0 * true_positives / len(targets)
             total_success += 1
 
