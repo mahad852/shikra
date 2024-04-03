@@ -44,6 +44,9 @@ class LVISDataset(MInstrDataset):
 
         image = self.get_image(img_path)
         question = self.get_template().replace(EXPR_PLACEHOLDER, name)
+        extended_question = "Please only give coordinates of the <expr> and not of other objects. Give coordinates of all the <expr> found.".replace(EXPR_PLACEHOLDER, name)
+        question = question + " " + extended_question
+        
         boxes_placeholder_string = ' '.join([BOXES_PLACEHOLDER] * len(item['bboxes']))
         ret = {
             'image': image,
