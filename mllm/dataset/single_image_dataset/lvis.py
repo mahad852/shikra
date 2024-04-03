@@ -44,8 +44,6 @@ class LVISDataset(MInstrDataset):
 
         image = self.get_image(img_path)
         question = self.get_template().replace(EXPR_PLACEHOLDER, name)
-        extended_question = "Provide the answer in the [[Xmin1, Ymin1, Xmax1, Ymax1], [Xmin2, Ymin2, Xmax2, Ymax2], ... [XminN, YminN, XmaxN, YmaxN]] format where N is the the number of <expr>. N can be 1 or greater than 1. Please mention each <expr> found.".replace(EXPR_PLACEHOLDER, name)
-        question = question + " " + extended_question
 
         boxes_placeholder_string = ' '.join([BOXES_PLACEHOLDER] * len(item['bboxes']))
         ret = {

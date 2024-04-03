@@ -1,3 +1,3 @@
 [
-    "Give the coordinates for all of the <expr> found in the image <image>."
+    "Give the coordinates for all of the <expr> found in the image <image> in the [x0, y0, x1, y1] format. Mention all the objects."
 ]
