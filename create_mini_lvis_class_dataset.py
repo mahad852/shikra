@@ -13,6 +13,8 @@ common_inaccurate_chosen = 0
 saved = []
 image_chosen = {}
 
+from mllm.dataset.utils.transform import de_norm_box_xyxy
+
 with open("../data/lvis_by_class.jsonl", "r") as f:
     for line in f.readlines():
         category = json.loads(line)
@@ -75,7 +77,7 @@ with open("../data/lvis_log.jsonl", "r") as f:
 
 for i, ann_obj in enumerate(ann_objs):
     if ann_obj["category_name"] in image_chosen and ann_obj["img_path"] in image_chosen[ann_obj["category_name"]]:
-        final_ds.append({**ann_obj, "pred_bboxes": lvis_logs[i]["pred_bboxes"]})
+        final_ds.append({**ann_obj, "pred_bboxes": list(map(de_norm_box_xyxy, lvis_logs[i]["pred_bboxes"]))})
 
 
 print(final_ds)
