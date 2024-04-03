@@ -78,3 +78,4 @@ for i, ann_obj in enumerate(ann_objs):
 
 
 print(final_ds)
+print(len(final_ds))
