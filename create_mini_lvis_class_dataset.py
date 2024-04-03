@@ -12,7 +12,6 @@ common_inaccurate_chosen = 0
 
 saved = []
 image_chosen = {}
-category_name_chosen = {}
 
 with open("../data/lvis_by_class.jsonl", "r") as f:
     for line in f.readlines():
@@ -54,9 +53,11 @@ with open("../data/lvis_by_class.jsonl", "r") as f:
 
 
 for category in saved:
+    if category["name"] not in image_chosen:
+        image_chosen[category["name"]] = {}
+
     for image_path in category["images"]:
-        image_chosen[image_path] = True
-    category_name_chosen[category["name"]] = True
+        image_chosen[category["name"]][image_path] = True
 
 final_ds = []
 fpath_final_ds = "../data/lvis_mini_class.jsonl"
@@ -73,7 +74,7 @@ with open("../data/lvis_log.jsonl", "r") as f:
 
 
 for i, ann_obj in enumerate(ann_objs):
-    if ann_obj["category_name"] in category_name_chosen and ann_obj["img_path"] in image_chosen:
+    if ann_obj["category_name"] in image_chosen and ann_obj["img_path"] in image_chosen[ann_obj["category_name"]]:
         final_ds.append({**ann_obj, "pred_bboxes": lvis_logs[i]["pred_bboxes"]})
 
 
