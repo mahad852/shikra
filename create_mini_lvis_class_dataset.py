@@ -17,6 +17,7 @@ category_name_chosen = {}
 with open("../data/lvis_by_class.jsonl", "r") as f:
     for line in f.readlines():
         category = json.loads(line)
+        print(category)
 
         if category["is_category_rare"] and num_rare >= 4:
             continue
