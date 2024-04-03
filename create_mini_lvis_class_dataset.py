@@ -58,7 +58,7 @@ for category in saved:
         image_chosen[image_path] = True
     category_name_chosen[category["name"]] = True
 
-
+print(saved, image_chosen, category_name_chosen)
 final_ds = []
 fpath_final_ds = "../data/lvis_mini_class.jsonl"
 ann_objs = []
