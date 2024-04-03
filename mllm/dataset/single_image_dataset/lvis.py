@@ -77,7 +77,7 @@ class LVISComputeMetrics(BaseComputeMetrics):
 
         total_precision = 0
         total_success = 0
-        ious = []
+        all_ious = []
 
         pred_boxes, target_boxes = [], []
         for pred, target in zip(preds, targets):
@@ -112,7 +112,7 @@ class LVISComputeMetrics(BaseComputeMetrics):
                     if chosen_index != -1:
                         selected[chosen_index] = True
                         true_positives += 1
-                        ious.append(ious[p][chosen_index].item())
+                        all_ious.append(ious[p][chosen_index].item())
             
             total_precision += 1.0 * true_positives / len(targets)
             total_success += 1
@@ -126,7 +126,7 @@ class LVISComputeMetrics(BaseComputeMetrics):
             'precision': total_precision/total_success,
             'target_failed': target_failed,
             'failed': failed,
-            'iou': sum(ious)/len(ious),
+            'iou': sum(all_ious)/len(all_ious),
             'warning': warn_message,
         }
 
