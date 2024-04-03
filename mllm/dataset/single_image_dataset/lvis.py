@@ -132,14 +132,20 @@ class LVISComputeMetrics(BaseComputeMetrics):
     def extract_ans(self, string: str):
         try:
             list_of_boxes = self.box_formatter.extract(string)
-            print("EXTRACTED BOXES:", list_of_boxes, list_of_boxes[0])
-            if len(list_of_boxes) != 1 or len(list_of_boxes[0]) < 1:
+            
+            if len(list_of_boxes) == 0:
                 return None
             
-            for box in list_of_boxes[0]:
+            boxes = []
+            
+            for b in list_of_boxes:
+                if len(b) == 0:
+                    return None
+                box = b[0]
                 if len(box) != 4:
                     return None
-            return list_of_boxes[0]
+                boxes.append(box)
+            return boxes
         except Exception as e:
             logger.warning(f"extract_ans for {string} but get exception: {e}")
             return None
