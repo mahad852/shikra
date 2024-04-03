@@ -14,7 +14,7 @@ saved = []
 image_chosen = {}
 category_name_chosen = {}
 
-with open("../data/lvis_by_class.jsonl", "w") as f:
+with open("../data/lvis_by_class.jsonl", "r") as f:
     for line in f.readlines():
         category = json.loads(line)
 
