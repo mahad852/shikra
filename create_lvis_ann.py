@@ -1,4 +1,5 @@
 import json
+import os
 
 with open("../data/lvis_v1_val.json", "r") as f:
     obj = json.load(f)
@@ -52,6 +53,8 @@ for ann_obj in (annotations_dict):
 
 with open("../data/lvis_ann.jsonl", "w") as f:
     for i, res_dict in enumerate(final_res):
+        if not os.path.exists(os.path.join('/datasets/MSCOCO17', res_dict["img_path"])):
+            continue
         jout = json.dump(res_dict, f)
         if i != len(final_res) - 1:
             f.write("\n")
