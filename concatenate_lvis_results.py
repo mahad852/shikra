@@ -1,7 +1,7 @@
 import json 
 
 precision_file = "../data/lvis_precision_log.txt"
-ann_file = "../data/lvis_small_sample.jsonl"
+ann_file = "../data/lvis_ann.jsonl"
 
 categories_dict = {}
 with open("../data/lvis_v1_val.json", "r") as f:
