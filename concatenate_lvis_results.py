@@ -1,6 +1,6 @@
 import json 
 
-precision_file = "../data/lvis_precision_log.txt"
+precision_file = "../data/lvis_log.jsonl"
 ann_file = "../data/lvis_ann.jsonl"
 
 categories_dict = {}
@@ -16,29 +16,29 @@ for category in categories:
 images = {}
 categories = {}
 
-precisions = []
+lvis_run_logs = []
 
 with open(precision_file, "r") as f:
-    precisions = [float(line[:-1]) for line in f.readlines()]
-
+    for line in f.readlines():
+        lvis_run_logs.append(json.loads(line))
 
 with open(ann_file, "r") as f:
     for i, line in enumerate(f.readlines()):
         obj = json.loads(line)
 
         if obj["category_id"] not in categories:
-            categories[obj["category_id"]] = {"images" : [obj["img_path"]], "appearances" : 1, "mAP" : precisions[i], "name" : obj["category_name"], "is_category_rare" : is_category_rare[obj["category_id"]]}
+            categories[obj["category_id"]] = {"images" : [obj["img_path"]], "appearances" : 1, "mAP" : lvis_run_logs[i]["precision"], "name" : obj["category_name"], "is_category_rare" : is_category_rare[obj["category_id"]]}
         else:
             categories[obj["category_id"]]["images"].append(obj["img_path"])
             categories[obj["category_id"]]["appearances"] += 1
-            categories[obj["category_id"]]["mAP"] += precisions[i]
+            categories[obj["category_id"]]["mAP"] += lvis_run_logs[i]["precision"]
 
 
         if obj["image_id"] not in images:
-            images[obj["image_id"]] = {"path" : obj["img_path"], "num_objects" : obj["num_objects"], "precision" : precisions[i] * obj["num_objects"]}
+            images[obj["image_id"]] = {"path" : obj["img_path"], "num_objects" : obj["num_objects"], "precision" : lvis_run_logs[i]["precision"] * obj["num_objects"]}
         else:
             images[obj["image_id"]]["num_objects"] += obj["num_objects"]
-            images[obj["image_id"]]["precision"] += precisions[i] * obj["num_objects"]
+            images[obj["image_id"]]["precision"] += lvis_run_logs[i]["precision"] * obj["num_objects"]
 
 
 

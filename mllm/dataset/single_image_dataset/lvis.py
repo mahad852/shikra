@@ -15,6 +15,8 @@ from ..process_function import (
     BoxFormatter,
 )
 
+import json
+
 from ..root import (
     DATASETS,
     METRICS,
@@ -114,8 +116,8 @@ class LVISComputeMetrics(BaseComputeMetrics):
                         true_positives += 1
                         all_ious.append(ious[p][chosen_index].item())
             
-            with open("../data/lvis_precision_log.txt", 'a') as f:
-                f.write(str(1.0 * true_positives / len(targets)))
+            with open("../data/lvis_log.jsonl", 'a') as f:
+                json.dump({"pred_bboxes": extract_pred, "target" : extract_target, "precision":  1.0 * true_positives / len(targets)}, f)
                 f.write("\n")
 
             total_precision += 1.0 * true_positives / len(targets)
