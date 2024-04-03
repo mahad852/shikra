@@ -79,7 +79,6 @@ class LVISComputeMetrics(BaseComputeMetrics):
         total_success = 0
         all_ious = []
 
-        pred_boxes, target_boxes = [], []
         for pred, target in zip(preds, targets):
             extract_pred = self.extract_ans(pred)
             extract_target = self.extract_ans(target)
@@ -91,7 +90,7 @@ class LVISComputeMetrics(BaseComputeMetrics):
             if extract_pred is None:
                 failed += 1
                 logger.warning(f"failed to extract ans for pred: {pred}")
-                extract_pred = [0, 0, 0, 0]
+                extract_pred = [[0, 0, 0, 0]]
                 
             selected = [False] * len(extract_target)
             true_positives = 0
