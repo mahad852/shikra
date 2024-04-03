@@ -132,6 +132,7 @@ class LVISComputeMetrics(BaseComputeMetrics):
     def extract_ans(self, string: str):
         try:
             list_of_boxes = self.box_formatter.extract(string)
+            print("EXTRACTED BOXES:", list_of_boxes, list_of_boxes[0])
             if len(list_of_boxes) != 1 or len(list_of_boxes[0]) < 1:
                 return None
             
