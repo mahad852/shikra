@@ -69,7 +69,7 @@ with open("../data/lvis_ann.jsonl", "r") as f:
 
 lvis_logs = []
 with open("../data/lvis_log.jsonl", "r") as f:
-    for line in enumerate(f.readlines()):
+    for line in f.readlines():
         lvis_logs.append(json.loads(line))
 
 
