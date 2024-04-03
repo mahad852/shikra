@@ -125,7 +125,6 @@ def main():
 
             trainer.compute_metrics = _compute_metrics
             _pred_results = trainer.predict(_ds, metric_key_prefix=_prefix, **gen_kwargs)
-            print("results:", _pred_results)
             print("dataset:", cfg.data_args)
             trainer.log_metrics(_prefix, _pred_results.metrics)  # noqa
             trainer.save_metrics(_prefix, _pred_results.metrics)  # noqa

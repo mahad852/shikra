@@ -75,14 +75,15 @@ class LVISComputeMetrics(BaseComputeMetrics):
         failed = 0
         target_failed = 0
 
+        total_precision = 0
+        total_success = 0
+        ious = []
 
         pred_boxes, target_boxes = [], []
         for pred, target in zip(preds, targets):
-            print("PREDS and TARGETS:")
-            print("Preds:")
             extract_pred = self.extract_ans(pred)
-            print("targets:")
             extract_target = self.extract_ans(target)
+
             if extract_target is None:
                 target_failed += 1
                 logger.warning(f"failed to extract ans for target: {target}")
@@ -91,18 +92,30 @@ class LVISComputeMetrics(BaseComputeMetrics):
                 failed += 1
                 logger.warning(f"failed to extract ans for pred: {pred}")
                 extract_pred = [0, 0, 0, 0]
-            target_boxes.append(extract_target)
-            pred_boxes.append(extract_pred)
+                
+            selected = [False] * len(extract_target)
+            true_positives = 0
+            
+            with torch.no_grad():
+                targets = torch.tensor(extract_target)
+                preds = torch.tensor(extract_pred)
 
-        with torch.no_grad():
-            target_boxes = torch.tensor(target_boxes)
-            pred_boxes = torch.tensor(pred_boxes)
-            # normalized box value is too small, so that the area is 0.
-            ious = box_iou(pred_boxes * 1000, target_boxes * 1000)
-            ious = torch.einsum('i i -> i', ious)  # take diag elem
-            # NOTE: please note iou only calculate for success target
-            iou = ious.mean().item()
-            correct = (ious > 0.5).sum().item()
+                ious = box_iou(preds, targets)
+
+                for p in range(len(preds)):
+                    chosen_index = -1
+                    max_iou = 0
+                    for t in range(len(targets)):
+                        if ious[p][t].item() > 0.5 and not selected[t] and ious[p][t].item() > max_iou:
+                            max_iou = ious[p][t].item()
+                            chosen_index = t
+                    if chosen_index != -1:
+                        selected[chosen_index] = True
+                        true_positives += 1
+                        ious.append(ious[p][chosen_index].item())
+            
+            total_precision += 1.0 * true_positives / len(targets)
+            total_success += 1
 
         # HACK: currently we expand image to square. so this iou is the real iou.
         warn_message = "this iou is calculate on normalized box. just for non-rigorous training progress checking." \
@@ -110,23 +123,23 @@ class LVISComputeMetrics(BaseComputeMetrics):
         warnings.warn(warn_message)
 
         return {
-            'accuracy': 1.0 * correct / len(targets),
+            'precision': total_precision/total_success,
             'target_failed': target_failed,
             'failed': failed,
-            'iou': iou,
+            'iou': sum(ious)/len(ious),
             'warning': warn_message,
         }
 
     def extract_ans(self, string: str):
         try:
             list_of_boxes = self.box_formatter.extract(string)
-            print("extracted box list:", list_of_boxes)
-            if len(list_of_boxes) != 1 or len(list_of_boxes[0]) != 1:
+            if len(list_of_boxes) != 1 or len(list_of_boxes[0]) < 1:
                 return None
-            box = list_of_boxes[0][0]
-            if len(box) != 4:
-                return None
-            return box
+            
+            for box in list_of_boxes[0]:
+                if len(box) != 4:
+                    return None
+            return list_of_boxes[0]
         except Exception as e:
             logger.warning(f"extract_ans for {string} but get exception: {e}")
             return None

@@ -39,6 +39,5 @@ data_args = dict(
         num_beams=1,
     ),
 
-    dataset="LVIS"
 )
 
