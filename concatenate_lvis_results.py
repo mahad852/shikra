@@ -100,7 +100,7 @@ print("Precision for Rare objects:", rare_precision/rare_count)
 print("Precision for Common objects:", common_precision/common_count)
 
 with open("../data/lvis_by_class.jsonl", "w") as f:
-    for i, k in enumerate(categories.keys()):
+    for i, k in enumerate(list(categories.keys())):
         jout = json.dump(categories[k], f)
         if i != len(categories) - 1:
             f.write("\n")
