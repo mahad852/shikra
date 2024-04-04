@@ -84,7 +84,8 @@ with open("../data/lvis_log.jsonl", "r") as f:
 
 for i, ann_obj in enumerate(ann_objs):
     if ann_obj["category_name"] in image_chosen and ann_obj["img_path"] in image_chosen[ann_obj["category_name"]]:
-        final_ds.append({**ann_obj, "pred_bboxes": list(map(de_norm_box_xyxy, lvis_logs[i]["pred_bboxes"]))})
+        final_ds.append({**ann_obj, 
+                         "pred_bboxes": list(map(lambda bbox: de_norm_box_xyxy(bbox, w=ann_obj["width"], h=ann_obj["height"]), lvis_logs[i]["pred_bboxes"]))})
 
 
 print(final_ds)
