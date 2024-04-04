@@ -108,11 +108,11 @@ for obj in final_ds:
 
     for box in gt_boxes:
         x,y,w,h = box
-        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        cv2.rectangle(img, (int(x), int(y)), (int(x+w), int(y+h)), (0, 255, 0), 2)
 
     for box in pred_boxes:
         x,y,w,h = box
-        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        cv2.rectangle(img, (int(x), int(y)), (int(x+w), int(y+h)), (0, 0, 255), 2)
 
     
     img_name = category_name + "_" + ("rare" if is_category_rare else "common") + ".jpg"
