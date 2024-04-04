@@ -1,4 +1,8 @@
 import json
+import os
+import cv2
+import numpy as np
+
 
 limit = 4
 num_rare = 0
@@ -19,13 +23,15 @@ def de_norm_box_xyxy(box, *, w, h):
     x2 = x2 * w
     y1 = y1 * h
     y2 = y2 * h
-    box = x1, y1, x2, y2
+    box = [x1, y1, x2 - x1, y2 - y1]
     return box
+
+is_category_rare = {}
 
 with open("../data/lvis_by_class.jsonl", "r") as f:
     for line in f.readlines():
         category = json.loads(line)
-
+        is_category_rare[category["name"]] = category["is_category_rare"]
         if category["is_category_rare"] and num_rare >= 4:
             continue
         if not category["is_category_rare"] and num_common >= 4:
@@ -85,8 +91,39 @@ with open("../data/lvis_log.jsonl", "r") as f:
 for i, ann_obj in enumerate(ann_objs):
     if ann_obj["category_name"] in image_chosen and ann_obj["img_path"] in image_chosen[ann_obj["category_name"]]:
         final_ds.append({**ann_obj, 
-                         "pred_bboxes": list(map(lambda bbox: de_norm_box_xyxy(bbox, w=ann_obj["width"], h=ann_obj["height"]), lvis_logs[i]["pred_bboxes"]))})
+                         "pred_bboxes": list(map(lambda bbox: de_norm_box_xyxy(bbox, w=ann_obj["width"], h=ann_obj["height"]), lvis_logs[i]["pred_bboxes"])),
+                         "is_category_rare" : is_category_rare[ann_obj["category_name"]]})
+
+rare = 0
+common = 0
+
+for obj in final_ds:
+    img_path = os.path.join('/datasets/MSCOCO17', obj["img_path"])
+    gt_boxes = obj["bboxes"]
+    pred_boxes = obj["pred_bboxes"]
+    is_category_rare = obj["is_category_rare"]
+    category_name = obj["category_name"]
+
+    img = cv2.imread(img_path)
+
+    for box in gt_boxes:
+        x,y,w,h = box
+        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
+    for box in pred_boxes:
+        x,y,w,h = box
+        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 2)
+
+    
+    img_name = category_name + "_" + ("rare" if is_category_rare else "common") + ".jpg"
+    if is_category_rare:
+        rare += 1
+    else:
+        common += 1
+
+    cv2.imwrite("..data/images/" + img_name, img)
+    
 
 
-print(final_ds)
+# print(final_ds)
 print(len(final_ds), len(saved))
