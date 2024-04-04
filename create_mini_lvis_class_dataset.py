@@ -13,7 +13,14 @@ common_inaccurate_chosen = 0
 saved = []
 image_chosen = {}
 
-from mllm.dataset.utils.transform import de_norm_box_xyxy
+def de_norm_box_xyxy(box, *, w, h):
+    x1, y1, x2, y2 = box
+    x1 = x1 * w
+    x2 = x2 * w
+    y1 = y1 * h
+    y2 = y2 * h
+    box = x1, y1, x2, y2
+    return box
 
 with open("../data/lvis_by_class.jsonl", "r") as f:
     for line in f.readlines():
