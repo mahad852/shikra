@@ -121,7 +121,7 @@ for obj in final_ds:
     else:
         common += 1
 
-    cv2.imwrite("..data/images/" + img_name, img)
+    cv2.imwrite("../data/images/" + img_name, img)
     print("image written to:", "..data/images/" + img_name)
 
 
