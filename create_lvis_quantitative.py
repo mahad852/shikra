@@ -115,14 +115,14 @@ for obj in final_ds:
         cv2.rectangle(img, (int(x), int(y)), (int(x+w), int(y+h)), (0, 0, 255), 2)
 
     
-    img_name = category_name + "_" + ("rare" if is_category_rare else "common") + ".jpg"
+    img_name = category_name + f"{rare if is_category_rare else common}_" + ("rare" if is_category_rare else "common") + ".jpg"
     if is_category_rare:
         rare += 1
     else:
         common += 1
 
     cv2.imwrite("../data/images/" + img_name, img)
-    print("image written to:", "..data/images/" + img_name)
+    print("image written to:", "../data/images/" + img_name)
 
 
 # print(final_ds)
