@@ -1,13 +1,24 @@
 import json
 import re
+import logging
+import sys
 
 from ..root import DATASETS, IMAGE_PLACEHOLDER, BOXES_PLACEHOLDER, QUESTION_PLACEHOLDER, METRICS
 from ..utils.flickr30k_entities_utils import PHRASE_ST_PLACEHOLDER, PHRASE_ED_PLACEHOLDER
 from ..utils import MInstrDataset, BaseComputeMetrics
 
+from typing import Dict, Any, Sequence
+
 REFID_PAT = re.compile(r'(\s\((?:(?:\d+(?:,\d+)*)|-)\)\s?)')
 ANS_EXTRACT_PAT = re.compile(r'(?:(?:(?:(?:(?:So t)|(?:T)|(?:t))he answer is)|(?:Answer:)) (.+))')
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    datefmt="%m/%d/%Y %H:%M:%S",
+    handlers=[logging.StreamHandler(sys.stdout), ],
+)
 
 @DATASETS.register_module()
 class GQADataset(MInstrDataset):
@@ -31,10 +42,10 @@ class GQADataset(MInstrDataset):
         self.qtype = qtype
         self.atype = atype
 
-        assert bool(scene_graph_file) == bool(scene_graph_index)
-        if scene_graph_file is not None and scene_graph_index is not None:
-            self.scene_graph = [line for line in open(scene_graph_file, 'r', encoding='utf8')]
-            self.scene_index = json.load(open(scene_graph_index, 'r', encoding='utf8'))
+        # assert bool(scene_graph_file) == bool(scene_graph_index)
+        if scene_graph_file is not None: #and scene_graph_index is not None:
+            self.scene_graph = json.load(open(scene_graph_file, 'r'))
+            # self.scene_index = json.load(open(scene_graph_index, 'r', encoding='utf8'))
         else:
             self.scene_graph = None
             self.scene_index = None
@@ -43,7 +54,7 @@ class GQADataset(MInstrDataset):
         question = json.loads(self.data[index])
         if self.scene_graph is None:
             return question, None
-        scene = json.loads(self.scene_graph[self.scene_index[question['imageId']]])
+        scene = json.loads(self.scene_graph[question['imageId']])
         return question, scene
 
     def __getitem__(self, index):
@@ -223,6 +234,30 @@ def get_bl_example(ann, scene):
 
 @METRICS.register_module()
 class GQAComputeMetrics(BaseComputeMetrics):
+    def calculate_metric(self, preds: Sequence[str], targets: Sequence[str]) -> Dict[str, Any]:
+        correct = 0
+        failed = 0
+        target_failed = 0
+
+        for pred, target in zip(preds, targets):
+            print("answer: ", pred)
+            print("\n\n\n")
+            extract_pred = self.extract_ans(pred)
+            extract_target = self.extract_ans(target)
+            if extract_target is None:
+                target_failed += 1
+                logger.warning(f"failed to extract ans from target. maybe the response string is truncated: {target}.")
+                continue
+            if extract_pred is None:
+                failed += 1
+            if extract_pred == extract_target:
+                correct += 1
+        return {
+            'accuracy': 1.0 * correct / len(targets),
+            'target_failed': target_failed,
+            'failed': failed,
+        }
+    
     def extract_ans(self, string: str):
         try:
             found = ANS_EXTRACT_PAT.findall(string.strip())
