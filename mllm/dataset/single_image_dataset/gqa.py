@@ -220,9 +220,10 @@ def get_bl_example(ann, scene):
     boxes_seq = []
 
     origin_sent = ann['fullAnswer']
-    origin_sent = re.sub('(?:^Yes,)|(?:^No,)', '', origin_sent).strip()
+    print("get_bl_example: [origin_sent, ann['annotations']['fullAnswer']]", origin_sent, ann['annotations']['fullAnswer'])
     sent = list(origin_sent.split())
     for span, rids_str in ann['annotations']['fullAnswer'].items():
+        print("get_bl_example: for_loop: [span, rids_str]")
         span = tuple(map(int, span.split(':')))
         if len(span) == 1:
             span = [span[0], span[0] + 1]
@@ -231,7 +232,7 @@ def get_bl_example(ann, scene):
         boxes_idx = add_boxes_by_rids(boxes, rids, scene)
         boxes_seq.append(boxes_idx)
 
-    answer = "".join(sent)
+    answer = " ".join(sent)
     answer += f"The answer is {ann['answer']}."
     return boxes, answer, boxes_seq
 
@@ -248,7 +249,8 @@ class GQAComputeMetrics(BaseComputeMetrics):
         target_failed = 0
 
         for pred, target in zip(preds, targets):
-            print("answer: ", pred)
+            print("GQAComputeMetrics::calculate_metric answer: ", pred)
+            print("GQAComputeMetrics::calculate_metric bboxes: ", self.extract_boxes(target), self.extract_boxes(pred))
             print("\n\n\n")
             extract_pred = self.extract_ans(pred)
             extract_target = self.extract_ans(target)
