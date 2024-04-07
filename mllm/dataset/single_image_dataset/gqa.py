@@ -9,6 +9,10 @@ from ..utils import MInstrDataset, BaseComputeMetrics
 
 from typing import Dict, Any, Sequence
 
+from ..process_function import (
+    BoxFormatter,
+)
+
 REFID_PAT = re.compile(r'(\s\((?:(?:\d+(?:,\d+)*)|-)\)\s?)')
 ANS_EXTRACT_PAT = re.compile(r'(?:(?:(?:(?:(?:So t)|(?:T)|(?:t))he answer is)|(?:Answer:)) (.+))')
 
@@ -234,6 +238,10 @@ def get_bl_example(ann, scene):
 
 @METRICS.register_module()
 class GQAComputeMetrics(BaseComputeMetrics):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.box_formatter: BoxFormatter = self.preprocessor['target']['boxes']
+
     def calculate_metric(self, preds: Sequence[str], targets: Sequence[str]) -> Dict[str, Any]:
         correct = 0
         failed = 0
@@ -252,6 +260,9 @@ class GQAComputeMetrics(BaseComputeMetrics):
                 failed += 1
             if extract_pred == extract_target:
                 correct += 1
+
+
+            
         return {
             'accuracy': 1.0 * correct / len(targets),
             'target_failed': target_failed,
@@ -265,4 +276,25 @@ class GQAComputeMetrics(BaseComputeMetrics):
                 return None
             return found[0].strip().rstrip('.').strip()
         except (IndexError, AttributeError):
+            return None
+
+    def extract_boxes(self, string: str):
+        try:
+            list_of_boxes = self.box_formatter.extract(string)
+            
+            if len(list_of_boxes) == 0:
+                return None
+            
+            boxes = []
+            
+            for b in list_of_boxes:
+                if len(b) == 0:
+                    return None
+                box = b[0]
+                if len(box) != 4:
+                    return None
+                boxes.append(box)
+            return boxes
+        except Exception as e:
+            logger.warning(f"extract_ans for {string} but get exception: {e}")
             return None
