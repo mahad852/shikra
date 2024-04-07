@@ -9,6 +9,6 @@ GQA_TEST_COMMON_CFG = dict(
 DEFAULT_TEST_GQA_VARIANT = dict(
     GQA_QB_BL_VAL_BALANCED=dict(
         **GQA_TEST_COMMON_CFG, version="qb-bl", template_file=r"{{fileDirname}}/template/VQA.json",
-        filename=r'{{fileDirname}}/../../../../data/questions1.2/gqa_val_balanced_questions.jsonl'
+        filename=r'{{fileDirname}}/../../../../data/questions1.2/val_balanced_questions.jsonl'
     ),
 )
