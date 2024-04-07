@@ -58,7 +58,7 @@ class GQADataset(MInstrDataset):
         question = json.loads(self.data[index])
         if self.scene_graph is None:
             return question, None
-        scene = json.loads(self.scene_graph[question['imageId']])
+        scene = self.scene_graph[question['imageId']]
         return question, scene
 
     def __getitem__(self, index):
