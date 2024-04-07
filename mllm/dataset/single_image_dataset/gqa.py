@@ -263,7 +263,7 @@ class GQAComputeMetrics(BaseComputeMetrics):
         super().__init__(*args, **kwargs)
         self.box_formatter: BoxFormatter = self.preprocessor['target']['boxes']
 
-    def compute_metrics_using_fn(self, pred_boxes, target_boxes, comp_fn : function):
+    def compute_metrics_using_fn(self, pred_boxes, target_boxes):
         selected = [False] * len(target_boxes)
         true_positives = 0
         with torch.no_grad():
