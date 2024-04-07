@@ -13,6 +13,9 @@ from ..process_function import (
     BoxFormatter,
 )
 
+import torch
+from torchvision.ops import box_iou
+
 REFID_PAT = re.compile(r'(\s\((?:(?:\d+(?:,\d+)*)|-)\)\s?)')
 ANS_EXTRACT_PAT = re.compile(r'(?:(?:(?:(?:(?:So t)|(?:T)|(?:t))he answer is)|(?:Answer:)) (.+))')
 
@@ -236,6 +239,23 @@ def get_bl_example(ann, scene):
     answer += f"The answer is {ann['answer']}."
     return boxes, answer, boxes_seq
 
+def overlap_matrix(preds: torch.Tensor, targets: torch.Tensor):
+    def intersection(box1, box2):
+        x_left = max(box1[0], box2[0])
+        y_top = max(box1[1], box2[1])
+        x_right = min(box1[2], box2[2])
+        y_bottom = min(box1[3], box2[3])
+
+        if x_right < x_left or y_bottom < y_top:
+            return torch.tensor(0.0) 
+        return (x_right - x_left) * (y_bottom - y_top)
+    
+    matrix = torch.zeros((preds.shape[0], targets.shape[0]))
+    for i in range(preds.shape[0]):
+        for j in range(targets.shape[0]):
+            detection_area = (preds[i][2] - preds[i][0]) * (preds[i][3] - preds[i][1])
+            matrix[i][j] = intersection(targets[j], preds[i])/detection_area
+    return matrix
 
 @METRICS.register_module()
 class GQAComputeMetrics(BaseComputeMetrics):
@@ -243,32 +263,78 @@ class GQAComputeMetrics(BaseComputeMetrics):
         super().__init__(*args, **kwargs)
         self.box_formatter: BoxFormatter = self.preprocessor['target']['boxes']
 
+    def compute_metrics_using_fn(self, pred_boxes, target_boxes, comp_fn : function):
+        selected = [False] * len(target_boxes)
+        true_positives = 0
+        with torch.no_grad():
+            targets = torch.tensor(pred_boxes)
+            preds = torch.tensor(target_boxes)
+
+            metric_matrix = comp_fn(preds, targets)
+
+            for p in range(len(preds)):
+                chosen_index = -1
+                max_iou = 0
+                for t in range(len(targets)):
+                    if metric_matrix[p][t].item() > 0.5 and not selected[t] and metric_matrix[p][t].item() > max_iou:
+                        max_iou = metric_matrix[p][t].item()
+                        chosen_index = t
+                if chosen_index != -1:
+                    selected[chosen_index] = True
+                    true_positives += 1
+
+        precision = true_positives / len(preds) if len(preds) > 0 else 1
+        recall = true_positives / len(targets) if len(targets) > 0 else 1
+        f1_score = 2/((1/precision) + (1/recall))
+
+        return {"precision" : precision, "recall" : recall, "f1" : f1_score}
+    
     def calculate_metric(self, preds: Sequence[str], targets: Sequence[str]) -> Dict[str, Any]:
-        correct = 0
         failed = 0
         target_failed = 0
+        total_success = 0
+
+        iou_aggregate = {"precision" : 0.0, "recall" : 0.0, "f1" : 0.0}
+        overlap_aggregate = {"precision" : 0.0, "recall" : 0.0, "f1" : 0.0}
 
         for pred, target in zip(preds, targets):
             print("GQAComputeMetrics::calculate_metric answer: ", pred)
             print("GQAComputeMetrics::calculate_metric bboxes: ", self.extract_boxes(target), self.extract_boxes(pred))
             print("\n\n\n")
-            extract_pred = self.extract_ans(pred)
-            extract_target = self.extract_ans(target)
+            
+            extract_pred = self.extract_boxes(pred)
+            extract_target = self.extract_boxes(target)
+
             if extract_target is None:
                 target_failed += 1
-                logger.warning(f"failed to extract ans from target. maybe the response string is truncated: {target}.")
+                logger.warning(f"failed to extract ans for target: {target}")
                 continue
             if extract_pred is None:
                 failed += 1
-            if extract_pred == extract_target:
-                correct += 1
+                logger.warning(f"failed to extract ans for pred: {pred}")
+                extract_pred = [[0, 0, 0, 0]]
 
+            iou_metrics = self.compute_metrics_using_fn(pred, target, box_iou)
+            overlap_metrics = self.compute_metrics_using_fn(pred, target, overlap_matrix)
 
-            
+            total_success += 1
+
+            for k in ["precision", "recall", "f1"]:
+                iou_aggregate[k] += iou_metrics[k]
+                overlap_aggregate[k] += overlap_metrics[k]
+
+        metrics = {}
+        for k in ["precision", "recall", "f1"]:
+            iou_aggregate[k] /= total_success
+            overlap_aggregate[k] /= total_success
+
+            metrics["iou_" + k] = iou_aggregate[k]
+            metrics["overlap_" + k] = overlap_aggregate
+
         return {
-            'accuracy': 1.0 * correct / len(targets),
             'target_failed': target_failed,
             'failed': failed,
+            **metrics
         }
     
     def extract_ans(self, string: str):
@@ -295,8 +361,10 @@ class GQAComputeMetrics(BaseComputeMetrics):
                 box = b[0]
                 if len(box) != 4:
                     return None
+                if box in boxes:
+                    continue
                 boxes.append(box)
-            return boxes
+            return list(set(boxes))
         except Exception as e:
             logger.warning(f"extract_ans for {string} but get exception: {e}")
             return None

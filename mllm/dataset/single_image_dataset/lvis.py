@@ -120,7 +120,7 @@ class LVISComputeMetrics(BaseComputeMetrics):
                 json.dump({"pred_bboxes": extract_pred, "target" : extract_target, "precision":  1.0 * true_positives / len(targets)}, f)
                 f.write("\n")
 
-            total_precision += 1.0 * true_positives / len(targets)
+            total_precision += 1.0 * true_positives / len(preds)
             total_success += 1
 
         # HACK: currently we expand image to square. so this iou is the real iou.
