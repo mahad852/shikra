@@ -362,7 +362,7 @@ class GQAComputeMetrics(BaseComputeMetrics):
                 if len(box) != 4:
                     return None
                 boxes.append(box)
-            return list(set(boxes))
+            return boxes
         except Exception as e:
             logger.warning(f"extract_ans for {string} but get exception: {e}")
             return None
