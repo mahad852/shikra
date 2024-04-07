@@ -263,7 +263,7 @@ class GQAComputeMetrics(BaseComputeMetrics):
         super().__init__(*args, **kwargs)
         self.box_formatter: BoxFormatter = self.preprocessor['target']['boxes']
 
-    def compute_metrics_using_fn(self, pred_boxes, target_boxes):
+    def compute_metrics_using_fn(self, pred_boxes, target_boxes, comp_fn):
         selected = [False] * len(target_boxes)
         true_positives = 0
         with torch.no_grad():
@@ -303,7 +303,7 @@ class GQAComputeMetrics(BaseComputeMetrics):
             print("\n\n\n")
             
             extract_pred = self.extract_boxes(pred)
-            extract_target = self.extract_boxes(target)
+            extract_target = self.extract_boxes(target.split("ASSISTANT:")[-1])
 
             if extract_target is None:
                 target_failed += 1
@@ -361,8 +361,6 @@ class GQAComputeMetrics(BaseComputeMetrics):
                 box = b[0]
                 if len(box) != 4:
                     return None
-                if box in boxes:
-                    continue
                 boxes.append(box)
             return list(set(boxes))
         except Exception as e:
