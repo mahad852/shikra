@@ -267,8 +267,8 @@ class GQAComputeMetrics(BaseComputeMetrics):
         selected = [False] * len(target_boxes)
         true_positives = 0
         with torch.no_grad():
-            targets = torch.tensor(pred_boxes)
-            preds = torch.tensor(target_boxes)
+            targets = torch.tensor(target_boxes)
+            preds = torch.tensor(pred_boxes)
 
             metric_matrix = comp_fn(preds, targets)
 
@@ -314,8 +314,8 @@ class GQAComputeMetrics(BaseComputeMetrics):
                 logger.warning(f"failed to extract ans for pred: {pred}")
                 extract_pred = [[0, 0, 0, 0]]
 
-            iou_metrics = self.compute_metrics_using_fn(pred, target, box_iou)
-            overlap_metrics = self.compute_metrics_using_fn(pred, target, overlap_matrix)
+            iou_metrics = self.compute_metrics_using_fn(extract_pred, extract_target, box_iou)
+            overlap_metrics = self.compute_metrics_using_fn(extract_pred, extract_target, overlap_matrix)
 
             total_success += 1
 
