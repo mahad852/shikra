@@ -223,10 +223,8 @@ def get_bl_example(ann, scene):
     boxes_seq = []
 
     origin_sent = ann['fullAnswer']
-    print("get_bl_example: [origin_sent, ann['annotations']['fullAnswer']]", origin_sent, ann['annotations']['fullAnswer'])
     sent = list(origin_sent.split())
     for span, rids_str in ann['annotations']['fullAnswer'].items():
-        print("get_bl_example: for_loop: [span, rids_str]")
         span = tuple(map(int, span.split(':')))
         if len(span) == 1:
             span = [span[0], span[0] + 1]
@@ -301,18 +299,14 @@ class GQAComputeMetrics(BaseComputeMetrics):
         iou_aggregate = {"precision" : 0.0, "recall" : 0.0, "f1" : 0.0}
         overlap_aggregate = {"precision" : 0.0, "recall" : 0.0, "f1" : 0.0}
 
-        for pred, target in zip(preds, targets):
-            print("GQAComputeMetrics::calculate_metric answer: ", pred)
-            print("GQAComputeMetrics::calculate_metric bboxes: ", self.extract_boxes(target), self.extract_boxes(pred))
-            print("\n\n\n")
-            
+        for pred, target in zip(preds, targets):            
             extract_pred = self.extract_boxes(pred)
             extract_target = self.extract_boxes(target.split("ASSISTANT:")[-1])
 
             with open("../data/gqa_log.jsonl", 'a') as f:
                 json.dump({"pred_bboxes": extract_pred if extract_pred else [], 
                            "target" : extract_target if extract_target else [],
-                           "question" : target})
+                           "question" : target}, f)
                 f.write("\n")
 
             if extract_target is None:
