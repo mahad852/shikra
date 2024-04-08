@@ -24,7 +24,7 @@ with open("../data/gqa_log.jsonl", "r") as f:
             break
 
         res = json.loads(line)
-        pred_boxes = res["pred_boxes"]
+        pred_boxes = res["pred_bboxes"]
         target_boxes = res["target"]
         question = res["question"]
         image_id = val_questions[i]["imageId"]
