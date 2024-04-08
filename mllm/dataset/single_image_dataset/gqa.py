@@ -285,7 +285,11 @@ class GQAComputeMetrics(BaseComputeMetrics):
 
         precision = true_positives / len(preds) if len(preds) > 0 else 1
         recall = true_positives / len(targets) if len(targets) > 0 else 1
-        f1_score = 2/((1/precision) + (1/recall))
+
+        if precision == 0 or recall == 0:
+            f1_score = 0
+        else:
+            f1_score = 2/((1/precision) + (1/recall))
 
         return {"precision" : precision, "recall" : recall, "f1" : f1_score}
     
