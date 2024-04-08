@@ -333,7 +333,7 @@ class GQAComputeMetrics(BaseComputeMetrics):
             overlap_aggregate[k] /= total_success
 
             metrics["iou_" + k] = iou_aggregate[k]
-            metrics["overlap_" + k] = overlap_aggregate
+            metrics["overlap_" + k] = overlap_aggregate[k]
 
         return {
             'target_failed': target_failed,
