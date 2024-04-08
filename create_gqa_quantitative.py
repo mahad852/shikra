@@ -18,6 +18,9 @@ with open("../data/questions1.2/val_balanced_questions.jsonl", "r") as f:
     for line in f.readlines():
         val_questions.append(json.loads(line))
 
+
+scene_graph = json.load(open("../data/sceneGraphs/val_sceneGraphs.json", "r"))
+
 with open("../data/gqa_log.jsonl", "r") as f:
     for i, line in enumerate(f.readlines()):
         if i == total:
@@ -30,16 +33,17 @@ with open("../data/gqa_log.jsonl", "r") as f:
         image_id = val_questions[i]["imageId"]
 
         image_path = os.path.join("/datasets/GQA/images", image_id + ".jpg")
-        
+        image_height = scene_graph[image_id]["height"]
+        image_width = scene_graph[image_id]["width"]
 
         img = cv2.imread(image_path)
 
         for box in target_boxes:
-            x,y,w,h = de_norm_box_xyxy(box)
+            x,y,w,h = de_norm_box_xyxy(box, w=image_width, h=image_height)
             cv2.rectangle(img, (int(x), int(y)), (int(x+w), int(y+h)), (0, 255, 0), 2)
 
         for box in pred_boxes:
-            x,y,w,h = de_norm_box_xyxy(box)
+            x,y,w,h = de_norm_box_xyxy(box, w=image_width, h=image_height)
             cv2.rectangle(img, (int(x), int(y)), (int(x+w), int(y+h)), (0, 0, 255), 2)
 
         
