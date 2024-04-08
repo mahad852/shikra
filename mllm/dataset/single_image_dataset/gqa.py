@@ -309,6 +309,12 @@ class GQAComputeMetrics(BaseComputeMetrics):
             extract_pred = self.extract_boxes(pred)
             extract_target = self.extract_boxes(target.split("ASSISTANT:")[-1])
 
+            with open("../data/gqa_log.jsonl", 'a') as f:
+                json.dump({"pred_bboxes": extract_pred if extract_pred else [], 
+                           "target" : extract_target if extract_target else [],
+                           "question" : target})
+                f.write("\n")
+
             if extract_target is None:
                 target_failed += 1
                 logger.warning(f"failed to extract ans for target: {target}")
